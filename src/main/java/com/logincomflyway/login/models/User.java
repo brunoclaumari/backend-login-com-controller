@@ -2,11 +2,8 @@ package com.logincomflyway.login.models;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,13 +13,9 @@ import com.logincomflyway.login.enums.EnumRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 
@@ -141,21 +134,21 @@ public class User implements UserDetails, Serializable{// UserDetails,
 
 	@Override 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		if(this.user_role == EnumRole.ADMIN) {
-			return List.of(
-					new SimpleGrantedAuthority("ROLE_ADMIN"),
-					new SimpleGrantedAuthority("ROLE_USER")
-					);
+		
+		if(this != null) {
+			if(this.user_role == EnumRole.ADMIN) {
+				return List.of(
+						new SimpleGrantedAuthority("ROLE_ADMIN"),
+						new SimpleGrantedAuthority("ROLE_USER")
+						);
+			}
+			
+			return List.of(new SimpleGrantedAuthority("ROLE_USER"));			
 		}
 		
-		return List.of(
-				new SimpleGrantedAuthority("ROLE_USER")
-				);
-		
-		
-//		return roles.stream()
-//				.map(role -> new SimpleGrantedAuthority(role.getAuthority()))
-//				.collect(Collectors.toList());
+	return null;
+	
+
 	}
 
 	@Override

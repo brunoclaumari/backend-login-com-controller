@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.logincomflyway.login.dtos.RegisterDTO;
 import com.logincomflyway.login.dtos.UserResponseDTO;
-import com.logincomflyway.login.enums.EnumRole;
 import com.logincomflyway.login.models.User;
 import com.logincomflyway.login.repository.UserRepository;
 

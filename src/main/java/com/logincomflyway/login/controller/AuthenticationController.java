@@ -16,16 +16,15 @@ import com.logincomflyway.login.dtos.AuthResponseDTO;
 import com.logincomflyway.login.dtos.AuthenticationDTO;
 import com.logincomflyway.login.dtos.RegisterDTO;
 import com.logincomflyway.login.dtos.UserResponseDTO;
-import com.logincomflyway.login.enums.EnumRole;
 import com.logincomflyway.login.models.User;
 import com.logincomflyway.login.repository.UserRepository;
-import com.logincomflyway.login.security.SecurityConfigurations;
+import com.logincomflyway.login.security.TokenService;
 import com.logincomflyway.login.services.AuthenticationService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/myauth")
 public class AuthenticationController {
 	
 	@Autowired
@@ -38,13 +37,18 @@ public class AuthenticationController {
 	@Autowired
 	AuthenticationService myAuthService;
 	
+	@Autowired
+	TokenService tokenService;
+	
 	
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
+	public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
 		var userNamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 		var auth = this.authenticationManager.authenticate(userNamePassword);
 		
-		AuthResponseDTO resp = new AuthResponseDTO(auth.getName(), null, null);
+		var token = tokenService.generateToken((User)auth.getPrincipal());
+		
+		AuthResponseDTO resp = new AuthResponseDTO(auth.getName(), token, null);
 		
 		return ResponseEntity.ok().body(resp);
 	}
