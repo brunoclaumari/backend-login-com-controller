@@ -18,7 +18,7 @@ import com.logincomflyway.login.dtos.RegisterDTO;
 import com.logincomflyway.login.dtos.UserResponseDTO;
 import com.logincomflyway.login.models.User;
 import com.logincomflyway.login.repository.UserRepository;
-import com.logincomflyway.login.security.TokenService;
+import com.logincomflyway.login.security.MyTokenService;
 import com.logincomflyway.login.services.AuthenticationService;
 
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class AuthenticationController {
 	AuthenticationService myAuthService;
 	
 	@Autowired
-	TokenService tokenService;
+	MyTokenService tokenService;
 	
 	
 	@PostMapping("/login")
@@ -46,9 +46,10 @@ public class AuthenticationController {
 		var userNamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 		var auth = this.authenticationManager.authenticate(userNamePassword);
 		
+		//var expire = auth.get
 		var token = tokenService.generateToken((User)auth.getPrincipal());
 		
-		AuthResponseDTO resp = new AuthResponseDTO(auth.getName(), token, null);
+		AuthResponseDTO resp = new AuthResponseDTO(auth.getName(), token, tokenService.getExpiresIn());
 		
 		return ResponseEntity.ok().body(resp);
 	}

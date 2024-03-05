@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SecurityFilter extends OncePerRequestFilter {
 	
 	@Autowired
-	private TokenService tokenService;
+	private MyTokenService tokenService;
 	
 	@Autowired
 	UserRepository userRepository;
@@ -36,6 +36,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {		
 
 		try {
+			
+			var uri = request.getRequestURI();
 			String token = this.recoverToken(request);
 			if(token != null) {
 				String login = tokenService.validateJwtToken(token);
@@ -46,8 +48,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(authentication);				
 				}
 			}
-			
-			filterChain.doFilter(request, response);			
+			//if(!"/h2-console/**".contains(uri) && !"/favicon.ico".contains(uri))
+				filterChain.doFilter(request, response);			
 			
 		} catch (UnauthorizedException e) {
 			// TODO: handle exception

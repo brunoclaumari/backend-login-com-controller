@@ -2,6 +2,7 @@ package com.logincomflyway.login.controller.exceptions;
 
 import java.time.Instant;
 
+import org.springframework.context.ApplicationContextException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -77,7 +78,21 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(status).body(err);
 	}
 	
-	//UsernameNotFoundException
+	//ApplicationContextException
+	
+	@ExceptionHandler(ApplicationContextException.class)
+	public ResponseEntity<StandardError> databaseOut(ApplicationContextException e, HttpServletRequest request){
+		HttpStatus status=HttpStatus.SERVICE_UNAVAILABLE;//503
+		
+		StandardError err=new StandardError();
+		err.setTimestamp(Instant.now());
+		err.setStatus(status.value());
+		err.setError("Data base is out.");
+		err.setMessage(e.getMessage());
+		err.setPath(request.getRequestURI());
+		
+		return ResponseEntity.status(status).body(err);
+	}
 	
 
 	

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -15,22 +16,26 @@ import com.logincomflyway.login.models.User;
 import com.logincomflyway.login.services.exceptions.UnauthorizedException;
 
 @Service
-public class TokenService {
+@Component
+public class MyTokenService {
 	
 	@Value("${api.security.token.secret}")
 	private String secret;
 	
 	private final String issuer = "auth-api";
 	
+	private Instant expires_in;
+	
 	
 	public String generateToken(User user) {
 		
 		try {
+			this.expires_in = genExpirationDate();
 			Algorithm algorithm = Algorithm.HMAC256(secret);
 			String token = JWT.create()
 								.withIssuer(this.issuer)
 								.withSubject(user.getEmail())
-								.withExpiresAt(genExpirationDate())
+								.withExpiresAt(getExpiresIn())
 								.sign(algorithm);
 			
 			return token;
@@ -60,7 +65,13 @@ public class TokenService {
 	
 	
 	private Instant genExpirationDate() {
-		return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+		//Duração do token 
+		return LocalDateTime.now().plusMinutes(30).toInstant(ZoneOffset.of("-03:00"));
+	}
+
+
+	public Instant getExpiresIn() {
+		return expires_in;
 	}
 
 }
